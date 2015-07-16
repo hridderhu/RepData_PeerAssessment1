@@ -58,3 +58,32 @@ hist(stepsperday2$steps,
 summarystepsperday2 <- summary(stepsperday2$steps)
 print (summarystepsperday2["Median"])
 print (summarystepsperday2["Mean"])
+#
+makeweekfactor <- function(datestr) {
+  aday <- as.Date(datestr)
+  wday <- weekdays(aday,abbreviate=TRUE)
+  if (wday == "za" || wday == "zo") { 
+    1
+  } else { 
+    0
+  }
+}
+activity2$day <- sapply(activity2$date,makeweekfactor)
+activity2$day <- factor(activity2$day,labels = c("weekday","weekend"))
+
+stepsperinterval2 <- aggregate(steps ~ interval + day, data = activity2, mean )
+par(mfrow = c(2,1))
+plot(subset(stepsperinterval2,day=="weekend")$interval, 
+     subset(stepsperinterval2,day=="weekend")$steps, 
+     xlab= "Day-interval (5-minute)", 
+     ylab= "Average nr of steps taken", 
+     main="weekend",
+     type='l', 
+     col='red')
+plot(subset(stepsperinterval2,day=="weekday")$interval, 
+     subset(stepsperinterval2,day=="weekday")$steps, 
+     xlab= "Day-interval (5-minute)", 
+     ylab= "Average nr of steps taken", 
+     main="weekday",
+     type='l', 
+     col='red')
