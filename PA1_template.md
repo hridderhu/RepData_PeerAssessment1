@@ -1,6 +1,6 @@
 # Reproducible Research: Peer Assessment 1
 HvdR  
-Friday, July 17, 2015  
+Saturday, July 18, 2015  
 
 ## a) Introduction
 
@@ -174,4 +174,67 @@ replacing missing values with mean values results
 in more steps.
 
 
-## Are there differences in activity patterns between weekdays and weekends?
+## f) Are there differences in activity patterns between weekdays and weekends?
+
+The function which creates a new factor variable 
+with values: "weekday and "weekend":
+
+
+```r
+makeweekfactor <- function(datestr) {
+  aday <- as.Date(datestr)
+  wday <- weekdays(aday,abbreviate=TRUE)
+  if (wday == "za" || wday == "zo") { 
+    1
+  } else { 
+    0
+  }
+}
+```
+
+
+Adding the new factor variable to the dataset:
+
+
+```r
+activity2$day <- sapply(activity2$date,makeweekfactor)
+activity2$day <- factor(activity2$day,
+                        labels = c("weekday","weekend"))
+```
+
+Creation of the dataset with the average steps per interval,
+averaged for the factor weekday or weekend:
+
+
+```r
+stepsperinterval2 <- aggregate(steps ~ interval + day, 
+    data = activity2, mean )
+```
+
+Plotting the time series plot of the 5-minute interval
+and the average number of steps taken, averaged 
+across all weekday days or weekend days:
+
+
+```r
+# 2 rows of diagrams
+par(mfrow = c(2,1))
+# the weekend average
+plot(subset(stepsperinterval2,day=="weekend")$interval, 
+     subset(stepsperinterval2,day=="weekend")$steps, 
+     xlab= "Day-interval (5-minute)", 
+     ylab= "Average nr of steps taken", 
+     main="Weekend average",
+     type='l', 
+     col='red')
+# the weekday average
+plot(subset(stepsperinterval2,day=="weekday")$interval, 
+     subset(stepsperinterval2,day=="weekday")$steps, 
+     xlab= "Day-interval (5-minute)", 
+     ylab= "Average nr of steps taken", 
+     main="Weekday average",
+     type='l', 
+     col='red')
+```
+
+![](PA1_template_files/figure-html/f-factorplotting-1.png) 
